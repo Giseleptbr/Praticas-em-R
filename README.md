@@ -1,6 +1,7 @@
 # Praticas-em-R
 Uso de R nas cadeiras do Mestrado - Finanças e Métodos Quantitativos
 
+Fin_Corp.R:
 Exemplo: Cálculo do Valor Presente de um Título de Cupom
 Vamos considerar um título público que paga cupons anuais de $50 durante 10 anos, e ao final do período, o valor nominal de $1000 é devolvido. A taxa de juros (ou a taxa de desconto) no mercado é de 6%.
 
@@ -52,3 +53,53 @@ Assim, o valor presente total do título público será 926.39.
 
 Observação
 Os valores na HP12C geralmente são exibidos como negativos porque representam um fluxo de saída de dinheiro (como um investimento inicial). Por isso, o valor é mostrado com o sinal negativo.
+
+
+TIR_no_R.R:
+
+
+Neste exemplo, estamos utilizando duas abordagens diferentes em R para encontrar a Taxa Interna de Retorno (TIR) de um fluxo de caixa usando funções de rootSolve, pracma e spuRs. Vou detalhar cada etapa e os resultados.
+
+1. Definição do Fluxo de Caixa e Função y(x)
+
+Primeiro, definimos uma função y(x), que representa o valor presente líquido (VPL) do fluxo de caixa:
+
+y = function(x) -800 + 240/(1+x) + 260/((1+x)^2) + 280/((1+x)^3) + 300/((1+x)^4)
+
+O fluxo de caixa consiste em:
+
+	•	Ano 0: -800 (um investimento inicial)
+	•	Ano 1: 240
+	•	Ano 2: 260
+	•	Ano 3: 280
+	•	Ano 4: 300
+
+A função y(x) calcula o VPL descontando cada fluxo de caixa pela taxa x. A ideia é encontrar a taxa de desconto que faz com que o VPL seja zero.
+
+2. Uso do Método de Newton-Raphson para Encontrar uma Raiz
+
+A seguir, aplicamos o método de Newton-Raphson para encontrar uma raiz de y(x), com um ponto de partida inicial x = 0.5:
+
+newtonRaphson(y, 0.5)
+
+Resultados da Função newtonRaphson
+
+O resultado do método de Newton-Raphson retorna:
+
+	•	$root: A raiz encontrada, ou seja, o valor de x (TIR) que faz y(x) = 0. Aqui, a raiz é aproximadamente 0.1265553, ou 12,66%.
+	•	$f.root: O valor de y(x) na raiz encontrada, que está próximo de zero, confirmando que é uma solução (resíduo muito pequeno).
+	•	$niter: Número de iterações que o método Newton-Raphson precisou para convergir à solução.
+	•	$estim.prec: Precisão estimada da raiz, que também é muito baixa (próxima de zero), indicando que a solução é precisa.
+
+3. Uso do Método uniroot.all para Encontrar Todas as Raízes
+
+Depois, usamos a função uniroot.all() para buscar todas as raízes de y(x) no intervalo entre -1 e 3. Esta função pode encontrar múltiplas raízes em um intervalo, ao contrário do método Newton-Raphson, que só encontra uma raiz por vez.
+
+Resultado do uniroot.all
+
+	•	A função retorna um único valor, 0.1265598, que é a TIR para o fluxo de caixa definido em y(x), ou seja, o ponto em que o VPL é zero.
+	•	Neste caso, obtemos uma TIR próxima a 12,66% para esse fluxo de caixa, o que é consistente com o resultado de newtonRaphson.
+
+Resumo
+
+Esses métodos permitem calcular a TIR para o fluxo de caixa. O método Newton-Raphson encontrou uma única raiz, usando um ponto de partida (0.5), enquanto o uniroot.all buscou todas as raízes no intervalo fornecido. Ambos os métodos retornaram uma TIR consistente de aproximadamente 12,66%, indicando que essa é a taxa de desconto que torna o VPL igual a zero para esse fluxo de caixa.
